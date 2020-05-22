@@ -1,9 +1,10 @@
 // import AppError from '../errors/AppError';
-import { getRepository } from 'typeorm';
+import { getRepository, getCustomRepository } from 'typeorm';
 // import { response } from 'express';
 import Transaction from '../models/Transaction';
-import Category from '../models/Category';
-import AppError from '../errors/AppError';
+import CategoriesRepository from '../repositories/CategoriesRepository';
+// import Category from '../models/Category';
+// import AppError from '../errors/AppError';
 
 interface TransactionDTO {
   title: string;
@@ -20,19 +21,23 @@ class CreateTransactionService {
   }: Request): Promise<Transaction> {
     // TODO
     const transactionRepository = getRepository(Transaction);
-    const categoryRepository = getRepository(Category);
-    const categories = await categoryRepository.findOne({
-      where: { title: category },
-    });
+    const categoriesRepository = getCustomRepository(CategoriesRepository);
+    const categorie = await categoriesRepository.createIfItDoesntExist(
+      category,
+    );
+    // const categoryRepository = getRepository(Category);
+    // const categories = await categoryRepository.findOne({
+    //   where: { title: category },
+    // });
 
-    if (!categories?.id) {
-      throw new AppError('Categoria invalida');
-    }
+    // if (!categories?.id) {
+    //   throw new AppError('Categoria invalida');
+    // }
     const transaction = transactionRepository.create({
       title,
       value,
       type,
-      category: categories?.id,
+      category: categorie.id,
     });
 
     await transactionRepository.save(transaction);
