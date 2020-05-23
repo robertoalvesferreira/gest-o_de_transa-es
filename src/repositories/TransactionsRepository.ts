@@ -23,6 +23,7 @@ class TransactionsRepository extends Repository<Transaction> {
       outcome: 0,
       total: 0,
     };
+
     incomes.forEach((i: Transaction) => {
       balance.income += Number(i.value);
     });
@@ -33,7 +34,6 @@ class TransactionsRepository extends Repository<Transaction> {
 
     balance.total = balance.income - balance.outcome;
 
-    console.log(balance);
     return balance;
   }
 

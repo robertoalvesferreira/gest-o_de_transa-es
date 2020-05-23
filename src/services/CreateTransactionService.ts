@@ -4,7 +4,7 @@ import { getRepository, getCustomRepository } from 'typeorm';
 import Transaction from '../models/Transaction';
 import CategoriesRepository from '../repositories/CategoriesRepository';
 // import Category from '../models/Category';
-// import AppError from '../errors/AppError';
+import AppError from '../errors/AppError';
 
 interface TransactionDTO {
   title: string;
@@ -20,19 +20,15 @@ class CreateTransactionService {
     category,
   }: Request): Promise<Transaction> {
     // TODO
+    if (type !== 'income' && type !== 'outcome') {
+      throw new AppError('Tipo invalido!');
+    }
     const transactionRepository = getRepository(Transaction);
     const categoriesRepository = getCustomRepository(CategoriesRepository);
     const categorie = await categoriesRepository.createIfItDoesntExist(
       category,
     );
-    // const categoryRepository = getRepository(Category);
-    // const categories = await categoryRepository.findOne({
-    //   where: { title: category },
-    // });
 
-    // if (!categories?.id) {
-    //   throw new AppError('Categoria invalida');
-    // }
     const transaction = transactionRepository.create({
       title,
       value,
